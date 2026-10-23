@@ -24,10 +24,12 @@ Each has:
 2. If a virtue has *fewer* empty neighbors than its ideal, it pushes toward
    crowding: swap with the adjacent cell, or push a contiguous block away when
    force ≥ block length and the far side is empty.
-3. Empty cells with exactly three living neighbors birth a virtue inherited from
-   a random neighbor.
-4. A cell with zero empty neighbors is crushed and dies.
-5. **Win:** every living cell’s empty-neighbor count equals its ideal space.
+3. If a virtue has *more* empty neighbors than its ideal, it steps toward the
+   nearest other living cell (seeking company until temperance).
+4. Empty cells with exactly three living neighbors birth a virtue inherited from
+   a random neighbor — only while board density stays under 16%.
+5. A cell with zero empty neighbors is crushed and dies.
+6. **Win:** every living cell’s empty-neighbor count equals its ideal space.
 
 ## Run
 

@@ -101,4 +101,16 @@ describe("harmony", () => {
     assert.ok(report.living >= 0);
     assert.ok(report.ratio >= 0 && report.ratio <= 1);
   });
+
+  it("moves sparse virtues closer when they have too much space", () => {
+    const grid = createGrid(9, 3, null);
+    setCell(grid, 1, 1, "temperance"); // ideal 4, currently ~7–8 empty
+    setCell(grid, 7, 1, "diligence");
+    const before = getCell(grid, 1, 1);
+    const next = step(grid, () => 0);
+    // Temperance should have stepped toward diligence (rightward)
+    assert.equal(before, "temperance");
+    assert.equal(getCell(next, 1, 1), null);
+    assert.equal(getCell(next, 2, 1), "temperance");
+  });
 });

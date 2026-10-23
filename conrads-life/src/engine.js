@@ -250,9 +250,52 @@
     return next;
   }
 
+  function nearestOccupiedDirection(grid, x, y) {
+    let best = null;
+    let bestDist = Infinity;
+    for (let oy = 0; oy < grid.height; oy++) {
+      for (let ox = 0; ox < grid.width; ox++) {
+        if (ox === x && oy === y) continue;
+        if (getCell(grid, ox, oy) == null) continue;
+        const dist = Math.abs(ox - x) + Math.abs(oy - y);
+        if (dist < bestDist) {
+          bestDist = dist;
+          const dx = Math.sign(ox - x);
+          const dy = Math.sign(oy - y);
+          // Prefer a cardinal step toward the neighbor
+          if (Math.abs(ox - x) >= Math.abs(oy - y)) {
+            best = { dx, dy: 0 };
+          } else {
+            best = { dx: 0, dy };
+          }
+        }
+      }
+    }
+    return best;
+  }
+
+  /**
+   * Step into an empty cell toward company when a virtue has too much space.
+   */
+  function tryApproach(grid, ax, ay, dx, dy) {
+    const actorId = getCell(grid, ax, ay);
+    if (actorId == null) return false;
+    const nx = ax + dx;
+    const ny = ay + dy;
+    if (!inBounds(grid, nx, ny)) return false;
+    if (getCell(grid, nx, ny) != null) {
+      // Blocked — swap if we can (still seeking company through exchange)
+      return tryPush(grid, ax, ay, dx, dy);
+    }
+    setCell(grid, ax, ay, null);
+    setCell(grid, nx, ny, actorId);
+    return true;
+  }
+
   function step(grid, rng = Math.random) {
     const working = cloneGrid(grid);
-    const movers = [];
+    const pushers = [];
+    const seekers = [];
 
     for (let y = 0; y < working.height; y++) {
       for (let x = 0; x < working.width; x++) {
@@ -261,20 +304,27 @@
         const ideal = VIRTUE_BY_ID[id].idealSpace;
         const space = emptyNeighbors(working, x, y);
         if (space < ideal) {
-          movers.push({
+          pushers.push({
             x,
             y,
             deficit: ideal - space,
+            force: VIRTUE_BY_ID[id].force,
+          });
+        } else if (space > ideal) {
+          seekers.push({
+            x,
+            y,
+            excess: space - ideal,
             force: VIRTUE_BY_ID[id].force,
           });
         }
       }
     }
 
-    movers.sort((a, b) => b.deficit - a.deficit || b.force - a.force);
-
+    // Need-more-space first: push blocks away
+    pushers.sort((a, b) => b.deficit - a.deficit || b.force - a.force);
     const moved = new Set();
-    for (const m of movers) {
+    for (const m of pushers) {
       const key = `${m.x},${m.y}`;
       if (getCell(working, m.x, m.y) == null) continue;
       if (moved.has(key)) continue;
@@ -282,6 +332,21 @@
       const dir = pickPushDirection(working, m.x, m.y);
       if (!dir) continue;
       const did = tryPush(working, m.x, m.y, dir.dx, dir.dy);
+      if (did) {
+        moved.add(key);
+        moved.add(`${m.x + dir.dx},${m.y + dir.dy}`);
+      }
+    }
+
+    // Too much space: step closer to other virtues
+    seekers.sort((a, b) => b.excess - a.excess || b.force - a.force);
+    for (const m of seekers) {
+      if (getCell(working, m.x, m.y) == null) continue;
+      const key = `${m.x},${m.y}`;
+      if (moved.has(key)) continue;
+      const dir = nearestOccupiedDirection(working, m.x, m.y);
+      if (!dir || (dir.dx === 0 && dir.dy === 0)) continue;
+      const did = tryApproach(working, m.x, m.y, dir.dx, dir.dy);
       if (did) {
         moved.add(key);
         moved.add(`${m.x + dir.dx},${m.y + dir.dy}`);
