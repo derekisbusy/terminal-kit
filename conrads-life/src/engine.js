@@ -215,8 +215,8 @@
     const deaths = [];
     const living = livingCount(grid);
     const capacity = grid.width * grid.height;
-    // Birth only while the board is sparse — overcrowding blocks temperance.
-    const allowBirth = living / capacity < 0.16;
+    // Birth is rare: only while sparse, and at most one newborn per generation.
+    const allowBirth = living / capacity < 0.08;
 
     for (let y = 0; y < grid.height; y++) {
       for (let x = 0; x < grid.width; x++) {
@@ -225,7 +225,7 @@
         const occupied = 8 - space;
 
         if (id == null) {
-          if (allowBirth && occupied === 3) {
+          if (allowBirth && births.length === 0 && occupied === 3 && rng() < 0.35) {
             const neighborVirtues = [];
             for (const { dx, dy } of DIRS) {
               const n = getCell(grid, x + dx, y + dy);

@@ -26,8 +26,8 @@ Each has:
    force ≥ block length and the far side is empty.
 3. If a virtue has *more* empty neighbors than its ideal, it steps toward the
    nearest other living cell (seeking company until temperance).
-4. Empty cells with exactly three living neighbors birth a virtue inherited from
-   a random neighbor — only while board density stays under 16%.
+4. Empty cells with exactly three living neighbors may birth at most one virtue
+   per generation (inherited from a neighbor) while board density stays under 8%.
 5. A cell with zero empty neighbors is crushed and dies.
 6. **Win:** every living cell’s empty-neighbor count equals its ideal space.
 
