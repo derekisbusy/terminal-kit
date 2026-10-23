@@ -1,0 +1,21 @@
+{
+  "name": "conrads-life",
+  "version": "1.0.0",
+  "description": "Conrad's Game of Life — virtues seeking temperance through space and force",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/*.test.js"
+  },
+  "keywords": [
+    "game-of-life",
+    "virtues",
+    "electron",
+    "temperance"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.4.11"
+  }
+}

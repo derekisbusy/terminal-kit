@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conrad's Game of Life</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="masthead">
+        <div class="brand-block">
+          <p class="brand">Conrad's Game of Life</p>
+          <p class="tagline">
+            Every living cell is a virtue. Push for space. Reach temperance.
+          </p>
+        </div>
+        <div class="harmony-panel" aria-live="polite">
+          <div class="harmony-label">
+            <span>Harmony</span>
+            <span id="harmony-text">0%</span>
+          </div>
+          <div class="harmony-track">
+            <div id="harmony-fill" class="harmony-fill"></div>
+          </div>
+          <p id="status-line" class="status-line">Seed virtues, then let them seek the right amount of space.</p>
+        </div>
+      </header>
+
+      <main class="stage">
+        <canvas id="grid" width="720" height="720" aria-label="Virtue grid"></canvas>
+
+        <aside class="side">
+          <section class="panel">
+            <h2>Controls</h2>
+            <div class="btn-row">
+              <button type="button" id="btn-play" class="primary">Play</button>
+              <button type="button" id="btn-step">Step</button>
+              <button type="button" id="btn-clear">Clear</button>
+            </div>
+            <div class="btn-row">
+              <button type="button" id="btn-seed">Scatter</button>
+              <button type="button" id="btn-balanced">Balanced seed</button>
+            </div>
+            <label class="slider-label">
+              Speed
+              <input type="range" id="speed" min="1" max="20" value="8" />
+            </label>
+            <p class="hint">
+              Click a cell to place the selected virtue. Right-click to erase.
+              Overcrowded virtues push — swapping with a neighbor, or shoving a
+              block when their force allows.
+            </p>
+          </section>
+
+          <section class="panel">
+            <h2>Virtues</h2>
+            <p class="hint muted">Select one, then paint. Ideal space is empty Moore neighbors.</p>
+            <ul id="virtue-list" class="virtue-list"></ul>
+          </section>
+
+          <section class="panel stats-panel">
+            <h2>Census</h2>
+            <ul id="census" class="census"></ul>
+          </section>
+        </aside>
+      </main>
+
+      <div id="win-overlay" class="win-overlay hidden" role="dialog" aria-modal="true">
+        <div class="win-card">
+          <p class="win-brand">Conrad's Game of Life</p>
+          <h1>Harmony</h1>
+          <p>
+            Every virtue has the right amount of space. Temperance holds the
+            board.
+          </p>
+          <button type="button" id="btn-continue" class="primary">Continue watching</button>
+        </div>
+      </div>
+    </div>
+    <script src="src/virtues.js"></script>
+    <script src="src/engine.js"></script>
+    <script src="renderer.js"></script>
+  </body>
+</html>
